@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "types": ["bun"],
+    "lib": ["ESNext", "DOM"],
+    "module": "ESNext",
+    "target": "ESNext",
+    "jsx": "react-jsx"
+  }
+}
