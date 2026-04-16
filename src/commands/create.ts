@@ -129,7 +129,7 @@ await Bun.write(
       dependencies: {
         react: "^18",
         "react-dom": "^18",
-        bladex: "^0.1.1",
+        bladex: "^0.1.2",
       },
     },
     null,
