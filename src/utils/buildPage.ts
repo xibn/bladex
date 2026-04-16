@@ -23,10 +23,16 @@ export async function buildPage(
 
     loader: {
       ".tsx": "tsx",
+      ".jsx": "jsx",
       ".ts": "ts",
+      ".js": "js",
       ".png": "dataurl",
       ".jpg": "dataurl",
+      ".jpeg": "dataurl",
+      ".webp": "dataurl",
+      ".gif": "dataurl",
       ".svg": "dataurl",
+      ".mp4": "dataurl",
     } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     // TODO: remove "as any" when Bun type-bug is fixed
 
