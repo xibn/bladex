@@ -6,11 +6,9 @@ export function generateBladeView(head: HeadInput[], code: string) {
 
   return `<!DOCTYPE html>
 <html>
-    @verbatim
-        <head>
-            ${headHtml}
-        </head>
-    @endverbatim
+    <head>
+        ${headHtml}
+    </head>
 
     <body>
         <div id="app"></div>
