@@ -10,8 +10,12 @@ const pages = await getPages(config.pagesDir);
 
 for (const p of pages) {
   const fullPath = resolve(rootDir, p);
+  try {
+    const { bladePath } = await buildPage(fullPath, config, rootDir);
 
-  const { bladePath } = await buildPage(fullPath, config, rootDir);
-
-  console.log("✅ Built", bladePath);
+    console.log(`✅ Built: ${bladePath}`);
+  } catch (error) {
+    console.error(`❌ Build failed: ${fullPath}`);
+    console.error(error);
+  }
 }

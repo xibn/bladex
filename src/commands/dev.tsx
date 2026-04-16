@@ -9,8 +9,7 @@ import { resolve } from "node:path";
 const config = await loadConfig();
 
 const rootDir = process.cwd();
-const pagesDir = resolve(rootDir, config.pagesDir);
-const configFile = resolve(rootDir, "bladex.config.ts");
+const srcDir = resolve(rootDir, "src");
 
 const clients = new Set<ServerWebSocket<unknown>>();
 const prevHashes = new Map<string, string>();
@@ -35,21 +34,34 @@ Bun.serve({
 });
 
 async function buildOne(fullPath: string) {
-  const { bladePath, code, head } = await buildPage(fullPath, config, rootDir);
+  try {
+    const { bladePath, code, head } = await buildPage(
+      fullPath,
+      config,
+      rootDir,
+    );
 
-  const snapshot = JSON.stringify({ head, code });
-  const newHash = hash(snapshot);
-  const oldHash = prevHashes.get(fullPath);
+    const snapshot = JSON.stringify({ head, code });
+    const newHash = hash(snapshot);
+    const oldHash = prevHashes.get(fullPath);
 
-  const shouldUpdate = !!oldHash && oldHash !== newHash;
-  prevHashes.set(fullPath, newHash);
+    const shouldUpdate = !!oldHash && oldHash !== newHash;
+    prevHashes.set(fullPath, newHash);
 
-  console.log(`✅ Synced ${bladePath}`);
-
-  if (shouldUpdate) {
-    for (const ws of clients) {
-      ws.send(JSON.stringify({ type: "update", code }));
+    if (!oldHash) {
+      console.log(`✅ Built: ${bladePath}`);
+    } else if (oldHash !== newHash) {
+      console.log(`🔄 Updated: ${bladePath}`);
     }
+
+    if (shouldUpdate) {
+      for (const ws of clients) {
+        ws.send(JSON.stringify({ type: "update", code }));
+      }
+    }
+  } catch (error) {
+    console.error(`❌ Build failed: ${fullPath}`);
+    console.error(error);
   }
 }
 
@@ -62,37 +74,28 @@ async function buildAll() {
 
 let timeout: Timer | undefined;
 
-function queueBuild(fn: () => Promise<void>, label: string) {
+function queueBuild(fn: () => Promise<void>) {
   if (timeout) clearTimeout(timeout);
 
   timeout = setTimeout(async () => {
-    console.log(`⚡ Rebuilding (${label})...`);
+    console.log(`⚡ Rebuilding...`);
     await fn();
+    console.log(`⚡ Rebuilding finished.`);
   }, 120);
 }
 
-watch(pagesDir, { recursive: true }, (_eventType, filename) => {
+watch(srcDir, { recursive: true }, (_eventType, filename) => {
   if (!filename) return;
 
   let file = String(filename);
 
+  if (!file.includes(".")) return;
+
   if (file.endsWith("~")) file = file.slice(0, -1);
-  if (!file.endsWith(".tsx")) return;
 
-  const fullPath = resolve(pagesDir, file);
+  console.log(`👀 File changed: ${file}`);
 
-  console.log(`👀 page changed: ${file}`);
-
-  queueBuild(() => buildOne(fullPath), file);
+  queueBuild(buildAll);
 });
-
-try {
-  watch(configFile, () => {
-    console.log("👀 config changed");
-    queueBuild(buildAll, "config");
-  });
-} catch {
-  // ignore
-}
 
 await buildAll();
