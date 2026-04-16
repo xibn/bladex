@@ -1,12 +1,12 @@
 # BladeX
 
-![npm](https://img.shields.io/npm/v/bladex)
-![license](https://img.shields.io/npm/l/bladex)
+[![npm version][npm-version-src]][npm-href]
+[![npm downloads][npm-downloads-src]][npm-href]
+[![npm license][npm-license-src]][npm-href]
 
-BladeX is a lightweight bridge between Laravel Blade and React, allowing you to build Blade views using modern React components.
+Build standalone Laravel Blade templates using React and Bun.
 
-> [!CAUTION]
-> BladeX is experimental. There are no tests and no guarantees that it will work in all environments.
+> ⚠️ INFO: BladeX is experimental. There are no tests and no guarantees that it will work in a specific environment.
 
 ## 🤔 Why BladeX?
 
@@ -31,7 +31,7 @@ cd bladex
 bun run dev
 ```
 
-This will create a `bladex` directory inside your Laravel project, containing your BladeX codebase.
+This will create a `bladex` directory inside your Laravel project containing your BladeX codebase.
 After running `bun run dev`, a new `index.blade.php` page will be generated and ready to use.
 
 > All Blade views generated via BladeX are grouped in a `bladex` directory inside your Laravel project's `resources/views` directory.
@@ -60,12 +60,12 @@ bladex/
 ├── tsconfig.json
 ├── bun.lock (generated automatically)
 ├── src/
-├── ├── components/
-├── ├── ├── counter.tsx
-├── ├── lib/
-├── ├── ├── example.ts
-├── ├── pages/
-├── ├── ├── index.tsx
+│   └── components/
+│   │   └── counter.tsx
+│   └── lib/
+│   │   └── example.ts
+│   └── pages/
+│       └── index.tsx
 ```
 
 ## ⌨️ Commands
@@ -158,3 +158,10 @@ Feel free to contribute to this project as you see fit.
 ## 📃 License
 
 This project is licensed under the MIT License.
+
+<!-- Badges -->
+
+[npm-version-src]: https://img.shields.io/npm/v/bladex
+[npm-license-src]: https://img.shields.io/npm/l/bladex
+[npm-downloads-src]: https://img.shields.io/npm/d18m/bladex
+[npm-href]: https://www.npmjs.com/package/bladex
