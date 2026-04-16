@@ -1,9 +1,12 @@
 export { defineConfig } from "./config";
 export type { BladeXConfig } from "./config";
 
-export function useBladeData<T = any>(): T {
+export function useBladeData<T = unknown>(): T {
   if (typeof window === "undefined") return {} as T;
-  return (window as any).__BLADEX_DATA__ || {};
+
+  return (
+    (window as unknown as { __BLADEX_DATA__?: T }).__BLADEX_DATA__ ?? ({} as T)
+  );
 }
 
 export { title } from "./head/title";

@@ -91,6 +91,8 @@ try {
     console.log("👀 config changed");
     queueBuild(buildAll, "config");
   });
-} catch {}
+} catch {
+  // ignore
+}
 
 await buildAll();

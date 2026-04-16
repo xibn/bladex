@@ -3,3 +3,5 @@ export type HeadNode = {
   attrs?: Record<string, string>;
   content?: string;
 };
+
+export type HeadInput = HeadNode | { toJSON(): HeadNode };

@@ -3,10 +3,12 @@ import { pathToFileURL } from "bun";
 import { generateBladeView } from "./generateBladeView";
 import { generateVirtualFile } from "./generateVirtualFile";
 import { resolveOutputPath } from "./resolveOutput";
+import { HeadInput } from "../head/type";
+import { BladeXConfig } from "./config";
 
 export async function buildPage(
   fullPath: string,
-  config: any,
+  config: BladeXConfig,
   rootDir: string,
 ) {
   const virtualEntry = "/virtual-entry.tsx";
@@ -25,7 +27,8 @@ export async function buildPage(
       ".png": "dataurl",
       ".jpg": "dataurl",
       ".svg": "dataurl",
-    } as any,
+    } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    // TODO: remove "as any" when Bun type-bug is fixed
 
     files: {
       [virtualEntry]: generateVirtualFile(fileUrl),
@@ -36,7 +39,7 @@ export async function buildPage(
 
   const mod = await import(pathToFileURL(fullPath).href + `?t=${Date.now()}`);
 
-  const head = mod.head || {};
+  const head = (mod.head ?? []) as HeadInput[];
 
   const bladePath = resolveOutputPath(
     fullPath,

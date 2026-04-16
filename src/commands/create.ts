@@ -6,8 +6,8 @@ const name = process.argv[3] || "bladex";
 
 try {
   await mkdir(name);
-} catch (err: any) {
-  if (err.code === "EEXIST") {
+} catch (err) {
+  if ((err as NodeJS.ErrnoException).code === "EEXIST") {
     console.error(`❌ Directory "${name}" already exists.`);
     process.exit(1);
   }

@@ -1,6 +1,7 @@
+import { HeadInput } from "../head/type";
 import { renderHead } from "./renderHead";
 
-export function generateBladeView(head: any[], code: string) {
+export function generateBladeView(head: HeadInput[], code: string) {
   const headHtml = renderHead(head);
 
   return `<!DOCTYPE html>

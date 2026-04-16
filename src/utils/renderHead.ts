@@ -1,7 +1,9 @@
-export function renderHead(head: any[]) {
+import { HeadInput } from "../head/type";
+
+export function renderHead(head: HeadInput[]) {
   return head
     .map((item) => {
-      const node = item.toJSON ? item.toJSON() : item;
+      const node = "toJSON" in item ? item.toJSON() : item;
 
       if (node.tag === "title") {
         return `<title>${node.content ?? ""}</title>`;
