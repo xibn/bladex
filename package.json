@@ -1,6 +1,6 @@
 {
   "name": "bladex",
-  "description": "",
+  "description": "Build standalone Laravel Blade templates using React and Bun.",
   "version": "0.1.2",
   "license": "MIT",
   "repository": {
