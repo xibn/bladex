@@ -90,18 +90,35 @@ For the output directory it points to the `resources/views` directory in your La
 ## 📄 Example Page
 
 ```tsx
-import { useBladeData } from "bladex";
-import { title, meta, bladeVar } from "bladex";
+import { useBladeData, bladeVar, setPageTitle, title, meta } from "bladex";
+import { useState } from "react";
+import Counter from "@components/counter";
+import { example } from "@lib/example";
 
 export const head = [
-  title().content(bladeVar("title")),
-  meta().name("description").content("Example page"),
+  title().content(`BladeX Page | ${bladeVar("title")}`),
+  meta().name("description").content("A Blade view, built using BladeX."),
 ];
 
 export default function Page() {
   const data = useBladeData<{ name: string }>();
-
-  return <h1>Hello {data.name}</h1>;
+  const [exampleLibFnResult, setExampleLibFnResult] = useState("");
+  const useExampleLibFn = () => {
+    setExampleLibFnResult(example());
+  };
+  const useSetPageTitleFn = () => {
+    setPageTitle("BladeX Page | Updated");
+  };
+  return (
+    <div>
+      <h1>Hello World</h1>
+      <h1>Blade-View-Data: {data.name}</h1>
+      <button onClick={useSetPageTitleFn}>Update title from the client</button>
+      <Counter />
+      <button onClick={useExampleLibFn}>Use example @lib function</button>
+      <h1>{exampleLibFnResult}</h1>
+    </div>
+  );
 }
 ```
 
