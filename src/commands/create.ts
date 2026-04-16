@@ -28,13 +28,13 @@ export default defineConfig({
 
 await Bun.write(
   "src/pages/index.tsx",
-  `import { useBladeData, title, meta } from 'bladex';
+  `import { useBladeData, bladeVar, setPageTitle, title, meta } from 'bladex';
 import { useState } from 'react';
 import Counter from '@components/counter';
 import { example } from '@lib/example';
 
 export const head = [
-  title().content('BladeX Page'),
+  title().content(\`BladeX Page | \${bladeVar('title')}\`),
   meta().name('description').content('A Blade view, built using BladeX.'),
 ];
 
@@ -44,10 +44,14 @@ export default function Page() {
     const useExampleLibFn = () => {
         setExampleLibFnResult(example());
     };
+    const useSetPageTitleFn = () => {
+        setPageTitle('BladeX Page | Updated');
+    };
     return (
         <div>
             <h1>Hello World</h1>
             <h1>Blade-View-Data: {data.name}</h1>
+            <button onClick={useSetPageTitleFn}>Update title from the client</button>
             <Counter />
             <button onClick={useExampleLibFn}>Use example @lib function</button>
             <h1>{exampleLibFnResult}</h1>
@@ -84,7 +88,7 @@ export default function Counter() {
 );
 
 await Bun.write(
-  "src/lib/example.tsx",
+  "src/lib/example.ts",
   `export function example() {
     console.log('This code runs in the browser (on the client).');
     return 'Example ' + Math.random();
