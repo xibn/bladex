@@ -6,6 +6,8 @@ import type { ServerWebSocket } from "bun";
 import { watch } from "node:fs";
 import { resolve } from "node:path";
 
+console.log("⚡ Starting development server...");
+
 const config = await loadConfig();
 
 const rootDir = process.cwd();
@@ -98,4 +100,5 @@ watch(srcDir, { recursive: true }, (_eventType, filename) => {
   queueBuild(buildAll);
 });
 
+console.log("🏗️ Building all pages...");
 await buildAll();

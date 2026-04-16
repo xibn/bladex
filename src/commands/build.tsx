@@ -3,6 +3,8 @@ import { loadConfig } from "../utils/config";
 import { buildPage } from "../utils/buildPage";
 import { resolve } from "node:path";
 
+console.log("🏗️ Building all pages...");
+
 const config = await loadConfig();
 const rootDir = process.cwd();
 
