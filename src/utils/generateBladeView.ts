@@ -1,13 +1,19 @@
 import { HeadInput } from "../head/type";
 import { renderHead } from "./renderHead";
 
-export function generateBladeView(head: HeadInput[], code: string) {
+export function generateBladeView(
+  head: HeadInput[],
+  code: string,
+  css: string,
+) {
   const headHtml = renderHead(head);
+  const cssHtml = css ? `<style id="_bladex_css">${css}</style>` : "";
 
   return `<!DOCTYPE html>
 <html>
     <head>
         ${headHtml}
+        ${cssHtml}
     </head>
 
     <body>
@@ -39,6 +45,18 @@ export function generateBladeView(head: HeadInput[], code: string) {
 
                     if (msg.type === "update") {
                         console.log("🔥 HMR update");
+
+                        if (msg.css !== undefined) {
+                            let style = document.getElementById("_bladex_css");
+
+                            if (!style) {
+                                style = document.createElement("style");
+                                style.id = "_bladex_css";
+                                document.head.appendChild(style);
+                            }
+
+                            style.textContent = msg.css;
+                        }
 
                         const el = document.getElementById("app");
                         if (!el) return;

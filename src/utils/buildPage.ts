@@ -46,6 +46,14 @@ export async function buildPage(
 
   const code = await result.outputs[0].text();
 
+  let css = "";
+
+  for (const output of result.outputs) {
+    if (output.path.endsWith(".css")) {
+      css += await output.text();
+    }
+  }
+
   const mod = await import(pathToFileURL(fullPath).href + `?t=${Date.now()}`);
 
   const head = (mod.head ?? []) as HeadInput[];
@@ -57,7 +65,7 @@ export async function buildPage(
     "pages",
   );
 
-  await Bun.write(bladePath, generateBladeView(head, code));
+  await Bun.write(bladePath, generateBladeView(head, code, css));
 
-  return { bladePath, code, head };
+  return { bladePath, code, head, css };
 }

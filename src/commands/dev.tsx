@@ -35,13 +35,13 @@ Bun.serve({
 
 async function buildOne(fullPath: string) {
   try {
-    const { bladePath, code, head } = await buildPage(
+    const { bladePath, code, head, css } = await buildPage(
       fullPath,
       config,
       rootDir,
     );
 
-    const snapshot = JSON.stringify({ head, code });
+    const snapshot = JSON.stringify({ head, code, css });
     const newHash = hash(snapshot);
     const oldHash = prevHashes.get(fullPath);
 
@@ -56,7 +56,7 @@ async function buildOne(fullPath: string) {
 
     if (shouldUpdate) {
       for (const ws of clients) {
-        ws.send(JSON.stringify({ type: "update", code }));
+        ws.send(JSON.stringify({ type: "update", code, css }));
       }
     }
   } catch (error) {
