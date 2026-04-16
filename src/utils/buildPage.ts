@@ -5,6 +5,7 @@ import { generateVirtualFile } from "./generateVirtualFile";
 import { resolveOutputPath } from "./resolveOutput";
 import { HeadInput } from "../head/type";
 import { BladeXConfig } from "./config";
+import { dataUrlPlugin } from "../plugins/dataUrlPlugin";
 
 export async function buildPage(
   fullPath: string,
@@ -39,6 +40,8 @@ export async function buildPage(
     files: {
       [virtualEntry]: generateVirtualFile(fileUrl),
     },
+
+    plugins: [dataUrlPlugin],
   });
 
   const code = await result.outputs[0].text();
