@@ -1,5 +1,4 @@
-export { defineConfig } from "./config";
-export type { BladeXConfig } from "./config";
+import type { BladeXConfig } from "./types/config";
 
 export function useBladeData<T = unknown>(): T {
   if (typeof window === "undefined") return {} as T;
@@ -31,4 +30,11 @@ export function setPageTitle(title: string): void {
 
 export function bladeVar(varName: string): string {
   return `{{ $${varName} }}`;
+}
+
+export { definePage } from "./utils/definePage";
+export { defineComponent } from "./utils/defineComponent";
+
+export function defineConfig<T extends BladeXConfig>(config: T): T {
+  return config;
 }

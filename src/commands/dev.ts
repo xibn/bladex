@@ -1,7 +1,7 @@
 import { hash } from "../utils/hash";
 import { loadConfig } from "../utils/config";
-import { getPages } from "../utils/pages";
-import { buildPage } from "../utils/buildPage";
+import { getExports } from "../utils/exports";
+import { buildExport } from "../utils/buildExport";
 import type { ServerWebSocket } from "bun";
 import { watch } from "node:fs";
 import { resolve } from "node:path";
@@ -9,9 +9,10 @@ import { resolve } from "node:path";
 console.log("⚡ Starting development server...");
 
 const config = await loadConfig();
-
 const rootDir = process.cwd();
 const srcDir = resolve(rootDir, "src");
+
+const exportsDir = resolve(rootDir, config.exportsDirectory ?? "src/exports");
 
 const clients = new Set<ServerWebSocket<unknown>>();
 const prevHashes = new Map<string, string>();
@@ -37,13 +38,12 @@ Bun.serve({
 
 async function buildOne(fullPath: string) {
   try {
-    const { bladePath, code, head, css } = await buildPage(
-      fullPath,
-      config,
-      rootDir,
-    );
+    const result = await buildExport(fullPath, config, rootDir);
+    if (!result) return;
+    const { bladePath, head, code, css } = result;
 
     const snapshot = JSON.stringify({ head, code, css });
+
     const newHash = hash(snapshot);
     const oldHash = prevHashes.get(fullPath);
 
@@ -51,9 +51,9 @@ async function buildOne(fullPath: string) {
     prevHashes.set(fullPath, newHash);
 
     if (!oldHash) {
-      console.log(`✅ Built: ${bladePath}`);
+      console.log(`✅ Built ${result.type}: ${bladePath}`);
     } else if (oldHash !== newHash) {
-      console.log(`🔄 Updated: ${bladePath}`);
+      console.log(`🔄 Updated ${result.type}: ${bladePath}`);
     }
 
     if (shouldUpdate) {
@@ -68,9 +68,10 @@ async function buildOne(fullPath: string) {
 }
 
 async function buildAll() {
-  const pages = await getPages(config.pagesDir);
-  for (const p of pages) {
-    await buildOne(resolve(rootDir, p));
+  const files = await getExports(exportsDir);
+
+  for (const fullPath of files) {
+    await buildOne(fullPath);
   }
 }
 
@@ -100,5 +101,5 @@ watch(srcDir, { recursive: true }, (_eventType, filename) => {
   queueBuild(buildAll);
 });
 
-console.log("🏗️ Building all pages...");
+console.log("🏗️ Building all exports...");
 await buildAll();

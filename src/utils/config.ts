@@ -1,14 +1,10 @@
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
-
-export type BladeXConfig = {
-  pagesDir: string;
-  outDir: string;
-};
+import type { BladeXConfig } from "../types/config";
 
 const defaultConfig: BladeXConfig = {
-  pagesDir: "src/pages",
-  outDir: "resources/views/generated",
+  viewsDirectory: "../resources/views",
+  exportsDirectory: "src/exports",
 };
 
 export async function loadConfig(): Promise<BladeXConfig> {

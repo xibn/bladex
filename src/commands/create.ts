@@ -20,44 +20,77 @@ await Bun.write(
   `import { defineConfig } from "bladex";
 
 export default defineConfig({
-  pagesDir: "src/pages",
-  outDir: "../resources/views",
+  viewsDirectory: "../resources/views",
+  exportsDirectory: "src/exports",
 });
 `,
 );
 
 await Bun.write(
-  "src/pages/index.tsx",
-  `import { useBladeData, bladeVar, setPageTitle, title, meta } from 'bladex';
+  "src/exports/examplePage.tsx",
+  `import { definePage, useBladeData, bladeVar, setPageTitle, title, meta } from 'bladex';
+import { useState } from 'react';
+import Counter from '@components/counter';
+import { example } from '@lib/example';
+import '@assets/app.css';
+
+export default definePage({
+    head: [title().content(\`BladeX Page | \${bladeVar('title')}\`), meta().name('description').content('A Blade view, built using BladeX.')],
+
+    component() {
+        const data = useBladeData<{ name: string }>();
+        const [exampleLibFnResult, setExampleLibFnResult] = useState('');
+
+        const useExampleLibFn = () => {
+            setExampleLibFnResult(example());
+        };
+
+        const useSetPageTitleFn = () => {
+            setPageTitle('BladeX Page | Updated');
+        };
+
+        return (
+            <div>
+                <h1>Hello World</h1>
+                <h1>Blade-View-Data: {data.name}</h1>
+                <button onClick={useSetPageTitleFn}>Update title from the client</button>
+                <Counter />
+                <button onClick={useExampleLibFn}>Use example @lib function</button>
+                <h1>{exampleLibFnResult}</h1>
+            </div>
+        );
+    },
+});
+`,
+);
+
+await Bun.write(
+  "src/exports/exampleComponent.tsx",
+  `import { defineComponent, useBladeData } from 'bladex';
 import { useState } from 'react';
 import Counter from '@components/counter';
 import { example } from '@lib/example';
 
-export const head = [
-  title().content(\`BladeX Page | \${bladeVar('title')}\`),
-  meta().name('description').content('A Blade view, built using BladeX.'),
-];
+export default defineComponent({
+    component() {
+        const data = useBladeData<{ name: string }>();
+        const [exampleLibFnResult, setExampleLibFnResult] = useState('');
 
-export default function Page() {
-    const data = useBladeData<{ name: string }>();
-    const [exampleLibFnResult, setExampleLibFnResult] = useState('');
-    const useExampleLibFn = () => {
-        setExampleLibFnResult(example());
-    };
-    const useSetPageTitleFn = () => {
-        setPageTitle('BladeX Page | Updated');
-    };
-    return (
-        <div>
-            <h1>Hello World</h1>
-            <h1>Blade-View-Data: {data.name}</h1>
-            <button onClick={useSetPageTitleFn}>Update title from the client</button>
-            <Counter />
-            <button onClick={useExampleLibFn}>Use example @lib function</button>
-            <h1>{exampleLibFnResult}</h1>
-        </div>
-    );
-}
+        const useExampleLibFn = () => {
+            setExampleLibFnResult(example());
+        };
+
+        return (
+            <div>
+                <h1>BladeX Component</h1>
+                <h1>Blade-View-Data: {data.name}</h1>
+                <Counter />
+                <button onClick={useExampleLibFn}>Use example @lib function</button>
+                <h1>{exampleLibFnResult}</h1>
+            </div>
+        );
+    },
+});
 `,
 );
 
@@ -96,15 +129,23 @@ await Bun.write(
 );
 
 await Bun.write(
+  "src/assets/app.css",
+  `h1 {
+  color: red;
+}`,
+);
+
+await Bun.write(
   "tsconfig.json",
   JSON.stringify(
     {
       compilerOptions: {
         baseUrl: ".",
         paths: {
-          "@pages/*": ["src/pages/*"],
           "@components/*": ["src/components/*"],
           "@lib/*": ["src/lib/*"],
+          "@exports/*": ["src/exports/*"],
+          "@assets/*": ["src/assets/*"],
         },
         jsx: "react-jsx",
         moduleResolution: "Bundler",

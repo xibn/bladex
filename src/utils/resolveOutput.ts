@@ -4,13 +4,19 @@ export function resolveOutputPath(
   fullPath: string,
   baseDir: string,
   outDir: string,
-  type: "pages" | "components",
+  type: "page" | "component",
 ) {
   const rel = relative(baseDir, fullPath)
-    .replace(/\.tsx$/, "")
-    .replace(/index$/, "");
+    .replaceAll("\\", "/")
+    .replace(".tsx", "")
+    .replace(".jsx", "")
+    .replace(".ts", "")
+    .replace(".js", "");
 
-  const final = rel === "" ? "index" : rel;
+  let componentDir = "";
+  if (type === "component") {
+    componentDir = "/components";
+  }
 
-  return `${outDir}/bladex/${type}/${final}.blade.php`;
+  return `${outDir}${componentDir}/bladex/${rel}.blade.php`;
 }
