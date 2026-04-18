@@ -30,7 +30,7 @@ export async function buildExport(
     entrypoints: [virtualEntry],
     format: "esm",
     target: "browser",
-    minify: false,
+    minify: true,
 
     loader: {
       ".tsx": "tsx",
