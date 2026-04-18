@@ -54,7 +54,10 @@ export async function buildExport(
     plugins: [dataUrlPlugin],
   });
 
-  const code = await result.outputs[0].text();
+  const code = (await result.outputs[0].text()).replaceAll(
+    "</script>",
+    "<\\/script>",
+  );
 
   let css = "";
 
