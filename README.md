@@ -89,7 +89,7 @@ bun run build  # build Blade views
 
 ## ⚙️ Config
 
-In BladeX's config you can define the pages exports directory and the views directory.
+In BladeX's config you can define the exports directory and the views directory.
 By default the exports directory points to the automatically created `bladex/src/exports` directory.
 For the views directory it points to the `resources/views` directory in your Laravel project. Please make sure it actually points to your Blade-views directory if you have manually changed it.
 
