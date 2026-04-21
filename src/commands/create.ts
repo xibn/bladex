@@ -137,46 +137,47 @@ await Bun.write(
 
 await Bun.write(
   "tsconfig.json",
-  JSON.stringify(
-    {
-      compilerOptions: {
-        baseUrl: ".",
-        paths: {
-          "@components/*": ["src/components/*"],
-          "@lib/*": ["src/lib/*"],
-          "@exports/*": ["src/exports/*"],
-          "@assets/*": ["src/assets/*"],
-        },
-        jsx: "react-jsx",
-        moduleResolution: "Bundler",
-        types: ["bun"],
-        lib: ["ESNext", "DOM"],
-      },
+  `{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@lib/*": ["src/lib/*"],
+      "@exports/*": ["src/exports/*"],
+      "@assets/*": ["src/assets/*"]
     },
-    null,
-    2,
-  ),
+    "jsx": "react-jsx",
+    "moduleResolution": "Bundler",
+    "types": ["bun"],
+    "lib": ["ESNext", "DOM"],
+
+    /* Ignore "baseUrl" deprecation */
+    "ignoreDeprecations": "6.0"
+  }
+}`,
 );
 
 await Bun.write(
   "package.json",
-  JSON.stringify(
-    {
-      private: true,
-      scripts: {
-        dev: "bladex dev",
-        build: "bladex build",
-      },
-      dependencies: {
-        react: "^18",
-        "react-dom": "^18",
-        bladex: "^0.1.3",
-      },
-    },
-    null,
-    2,
-  ),
+  `{
+  "private": true,
+  "scripts": {
+    "dev": "bladex dev",
+    "build": "bladex build"
+  },
+  "dependencies": {
+    "bladex": "^0.1.3",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/bun": "^1",
+    "@types/react": "^19"
+  }
+}`,
 );
+
+await Bun.write("global.d.ts", `declare module "*.css";`);
 
 await Bun.write(".gitignore", `node_modules`);
 
