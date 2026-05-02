@@ -76,9 +76,10 @@ export default defineComponent({
         const data = useBladeData<{ name: string }>();
         const [exampleLibFnResult, setExampleLibFnResult] = useState('');
 
-        const useExampleLibFn = () => {
-            setExampleLibFnResult(example());
-        };
+		    const useExampleLibFn = (e: { preventDefault: () => void; }) => {
+			  e.preventDefault();
+			    setExampleLibFnResult(example());
+		    };
 
         return (
             <div>

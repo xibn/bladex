@@ -1,4 +1,5 @@
 import { HeadInput } from "../head/type";
+import { chunkCode } from "./chunkCode";
 import { renderHead } from "./renderHead";
 
 export function generateBladePageView(
@@ -23,11 +24,7 @@ export function generateBladePageView(
             window.__BLADEX_DATA__ = {{ Js::from($__data ?? []) }};
         </script>
 
-        @verbatim
-        <script type="module">
-            ${code}
-        </script>
-        @endverbatim
+        ${chunkCode(code)}
 
         @if (app()->isLocal())
         <!-- Dev HMR -->

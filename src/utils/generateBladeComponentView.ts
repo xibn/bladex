@@ -1,5 +1,7 @@
+import { chunkCode } from "./chunkCode";
+
 export function generateBladeComponentView(code: string, css: string) {
-  const encoded = Buffer.from(code).toString("base64");
+  const cssHtml = css ? `<style id="_bladex_css">${css}</style>` : "";
 
   return `
 <div data-bladex-component>
@@ -7,31 +9,15 @@ export function generateBladeComponentView(code: string, css: string) {
 
     <script>
         window.__BLADEX_DATA__ = {{ Js::from($__data ?? []) }};
-        const __bladex_code__ = atob("${encoded}");
     </script>
 
-    <script>
-        (async () => {
-            const component = document.currentScript?.parentElement;
-            if (!component) return;
+    ${cssHtml}
 
-            const root = component.querySelector("[data-bladex-root]");
-            if (!root) return;
-
-            const blob = new Blob([__bladex_code__], {
-                type: "text/javascript",
-            });
-
-            const url = URL.createObjectURL(blob);
-            await import(url);
-            URL.revokeObjectURL(url);
-        })();
-    </script>
-
-    ${css ? `<style>${css}</style>` : ""}
+    ${chunkCode(code)}
 
     @if (app()->isLocal())
     <script>
+        const __bladex_component = document.currentScript.parentElement;
         const ws = new WebSocket("ws://localhost:35729");
 
         ws.onmessage = async (event) => {
@@ -46,34 +32,32 @@ export function generateBladeComponentView(code: string, css: string) {
             if (msg.type === "update") {
                 console.log("🔥 Component HMR update");
 
-                const component = document.currentScript?.parentElement;
-                if (!component) return;
-
                 if (msg.css !== undefined) {
-                    let style = component.querySelector("style");
+                    let style = __bladex_component.querySelector("style");
 
                     if (!style) {
                         style = document.createElement("style");
-                        component.appendChild(style);
+                        __bladex_component.appendChild(style);
                     }
 
                     style.textContent = msg.css;
                 }
 
-                const root = component.querySelector("[data-bladex-root]");
+                const root = __bladex_component.querySelector("[data-bladex-root]");
                 if (!root) return;
 
                 root.innerHTML = "";
 
-                const newCode = msg.code;
-
-                const blob = new Blob([newCode], {
-                    type: "text/javascript",
-                });
-
+                const blob = new Blob([msg.code], { type: "text/javascript" });
                 const url = URL.createObjectURL(blob);
+
                 await import(url);
+
                 URL.revokeObjectURL(url);
+            }
+
+            if (msg.type === "reload") {
+                location.reload();
             }
         };
     </script>
