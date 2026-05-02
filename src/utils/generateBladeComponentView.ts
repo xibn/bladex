@@ -4,7 +4,7 @@ export function generateBladeComponentView(code: string, css: string) {
   const cssHtml = css ? `<style id="_bladex_css">${css}</style>` : "";
 
   return `
-<div data-bladex-component>
+<div data-bladex-component wire:ignore>
     <div data-bladex-root></div>
 
     <script>
