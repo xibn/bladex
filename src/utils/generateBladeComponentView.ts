@@ -1,7 +1,11 @@
 import { chunkCode } from "./chunkCode";
 import { generateHmrRuntime } from "./generateHmrRuntime";
 
-export function generateBladeComponentView(code: string, css: string) {
+export function generateBladeComponentView(
+  code: string,
+  css: string,
+  id: string,
+) {
   const cssHtml = css ? `<style id="_bladex_css">${css}</style>` : "";
 
   return `
@@ -19,6 +23,7 @@ export function generateBladeComponentView(code: string, css: string) {
     @if (app()->isLocal())
         <!-- Dev HMR -->
         ${generateHmrRuntime({
+          id,
           preserveScroll: false,
         })}
     @endif

@@ -1,13 +1,17 @@
 type GenerateHmrRuntimeOptions = {
+  id: string;
   preserveScroll?: boolean;
 };
 
-export function generateHmrRuntime(options: GenerateHmrRuntimeOptions = {}) {
-  const { preserveScroll = false } = options;
+export function generateHmrRuntime(options: GenerateHmrRuntimeOptions) {
+  const { id, preserveScroll = false } = options;
 
   return `
 <script>
 (() => {
+    const __bladex_hmr_id =
+        ${JSON.stringify(id)};
+
     const ws =
         new WebSocket("ws://localhost:35729");
 
@@ -154,11 +158,16 @@ export function generateHmrRuntime(options: GenerateHmrRuntimeOptions = {}) {
             return;
         }
 
+        if (msg.id !== __bladex_hmr_id) {
+            return;
+        }
+
         const updateId =
             ++currentUpdateId;
 
         console.log(
             "🔥 HMR update",
+            __bladex_hmr_id,
         );
 
         ${
@@ -239,6 +248,7 @@ export function generateHmrRuntime(options: GenerateHmrRuntimeOptions = {}) {
 
             console.log(
                 "🔥 HMR applied",
+                __bladex_hmr_id,
             );
         } catch (err) {
             console.error(

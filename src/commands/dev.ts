@@ -4,7 +4,7 @@ import { getExports } from "../utils/exports";
 import { buildExport } from "../utils/buildExport";
 import type { ServerWebSocket } from "bun";
 import { watch } from "node:fs";
-import { resolve } from "node:path";
+import { relative, resolve } from "node:path";
 
 console.log("⚡ Starting development server...");
 
@@ -56,9 +56,18 @@ async function buildOne(fullPath: string) {
       console.log(`🔄 Updated ${result.type}: ${bladePath}`);
     }
 
+    const fileUrl = relative(rootDir, fullPath).replaceAll("\\", "/");
+
     if (shouldUpdate) {
       for (const ws of clients) {
-        ws.send(JSON.stringify({ type: "update", code, css }));
+        ws.send(
+          JSON.stringify({
+            type: "update",
+            id: fileUrl,
+            code,
+            css,
+          }),
+        );
       }
     }
   } catch (error) {

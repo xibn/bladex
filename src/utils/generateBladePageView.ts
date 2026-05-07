@@ -7,6 +7,7 @@ export function generateBladePageView(
   head: HeadInput[],
   code: string,
   css: string,
+  id: string,
 ) {
   const headHtml = renderHead(head);
   const cssHtml = css ? `<style id="_bladex_css">${css}</style>` : "";
@@ -30,6 +31,7 @@ export function generateBladePageView(
         @if (app()->isLocal())
             <!-- Dev HMR -->
             ${generateHmrRuntime({
+              id,
               preserveScroll: true,
             })}
         @endif
