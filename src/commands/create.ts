@@ -167,7 +167,7 @@ await Bun.write(
     "build": "bladex build"
   },
   "dependencies": {
-    "bladex": "^0.1.3",
+    "bladex": "^0.1.6",
     "react": "^18",
     "react-dom": "^18"
   },
