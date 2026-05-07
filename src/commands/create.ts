@@ -1,8 +1,11 @@
 import { mkdir } from "node:fs/promises";
+import packageJson from "../../package.json";
 
 export {};
 
 const name = process.argv[3] || "bladex";
+
+const bladexVersion = packageJson.version;
 
 try {
   await mkdir(name);
@@ -167,7 +170,7 @@ await Bun.write(
     "build": "bladex build"
   },
   "dependencies": {
-    "bladex": "^0.1.6",
+    "bladex": "^${bladexVersion}",
     "react": "^18",
     "react-dom": "^18"
   },
