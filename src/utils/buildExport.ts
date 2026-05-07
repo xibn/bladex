@@ -8,6 +8,19 @@ import { resolveOutputPath } from "./resolveOutput";
 import { generateBladeComponentView } from "./generateBladeComponentView";
 import { generateBladePageView } from "./generateBladePageView";
 
+async function getExternalPackages(rootDir: string): Promise<string[]> {
+  try {
+    const pkg = await Bun.file(resolve(rootDir, "package.json")).json();
+    const deps = Object.keys({
+      ...(pkg.dependencies ?? {}),
+      ...(pkg.peerDependencies ?? {}),
+    });
+    return deps.flatMap((d) => [d, `${d}/*`]);
+  } catch {
+    return [];
+  }
+}
+
 export async function buildExport(
   fullPath: string,
   config: BladeXConfig,
@@ -26,11 +39,14 @@ export async function buildExport(
 
   const fileUrl = relative(rootDir, fullPath).replaceAll("\\", "/");
 
+  const external = config.esmSh ? await getExternalPackages(rootDir) : [];
+
   const result = await Bun.build({
     entrypoints: [virtualEntry],
     format: "esm",
     target: "browser",
     minify: true,
+    external,
 
     define: {
       "process.env.NODE_ENV": '"production"',
@@ -59,10 +75,24 @@ export async function buildExport(
     plugins: [dataUrlPlugin],
   });
 
-  const code = (await result.outputs[0].text()).replaceAll(
-    "</script>",
-    "<\\/script>",
-  );
+  let code = await result.outputs[0].text();
+
+  if (config.esmSh) {
+    code = code.replace(/from\s*"([^"]+)"/g, (match, p) => {
+      if (
+        p.startsWith(".") ||
+        p.startsWith("/") ||
+        p.startsWith("https:") ||
+        p.startsWith("node:") ||
+        p.startsWith("bun:")
+      ) {
+        return match;
+      }
+      return `from"https://esm.sh/${p}"`;
+    });
+  }
+
+  code = code.replaceAll("</script>", "<\\/script>");
 
   let css = "";
 
