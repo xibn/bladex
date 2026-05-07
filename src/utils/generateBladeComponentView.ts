@@ -1,7 +1,9 @@
 import { chunkCode } from "./chunkCode";
 import { generateHmrRuntime } from "./generateHmrRuntime";
+import type { BladeXConfig } from "../types/config";
 
 export function generateBladeComponentView(
+  config: BladeXConfig,
   code: string,
   css: string,
   id: string,
@@ -18,7 +20,7 @@ export function generateBladeComponentView(
 
     ${cssHtml}
 
-    ${chunkCode(code)}
+    ${chunkCode(config, code)}
 
     @if (app()->isLocal())
         <!-- Dev HMR -->

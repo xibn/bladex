@@ -82,7 +82,10 @@ export async function buildExport(
       "page",
     );
 
-    await Bun.write(bladePath, generateBladePageView(head, code, css, fileUrl));
+    await Bun.write(
+      bladePath,
+      generateBladePageView(config, head, code, css, fileUrl),
+    );
 
     return { bladePath, type: "page", head, code, css };
   }
@@ -95,7 +98,10 @@ export async function buildExport(
       "component",
     );
 
-    await Bun.write(bladePath, generateBladeComponentView(code, css, fileUrl));
+    await Bun.write(
+      bladePath,
+      generateBladeComponentView(config, code, css, fileUrl),
+    );
 
     return { bladePath, type: "component", code, css };
   }
