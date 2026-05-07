@@ -32,6 +32,11 @@ export async function buildExport(
     target: "browser",
     minify: true,
 
+    define: {
+      "process.env.NODE_ENV": '"production"',
+      __DEV__: "false",
+    },
+
     loader: {
       ".tsx": "tsx",
       ".jsx": "jsx",
