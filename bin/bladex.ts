@@ -1,3 +1,5 @@
+#!/usr/bin/env bun
+
 export {};
 
 const cmd = process.argv[2];
