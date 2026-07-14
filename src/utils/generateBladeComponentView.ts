@@ -18,6 +18,22 @@ export function generateBladeComponentView(
         window.__BLADEX_DATA__ = {{ Js::from($__data ?? []) }};
     </script>
 
+    <script>
+        (() => {
+            const script = document.currentScript;
+            const container = script?.closest("[data-bladex-component]");
+
+            if (!container) {
+                return;
+            }
+
+            const queues = window.__BLADEX_COMPONENT_QUEUES__ ||= {};
+            const queue = queues[${JSON.stringify(id)}] ||= [];
+
+            queue.push(container);
+        })();
+    </script>
+
     ${cssHtml}
 
     ${chunkCode(config, code)}
