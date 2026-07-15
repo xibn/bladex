@@ -1,4 +1,8 @@
+import packageJson from "../../package.json";
+
 export function generateVirtualFile(fileUrl: string, exportId: string) {
+  const version = packageJson.version;
+
   return `
     import React from "react";
     import { createRoot } from "react-dom/client";
@@ -442,7 +446,7 @@ export function generateVirtualFile(fileUrl: string, exportId: string) {
 
       function inspect() {
         return {
-          version: "0.1.10",
+          version: ${JSON.stringify(version)},
           exports: Array.from(exports.keys()),
           instances: Array.from(diagnostics.values()),
         };

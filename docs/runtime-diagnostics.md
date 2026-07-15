@@ -39,7 +39,7 @@ Example:
 
 ```js
 {
-  version: "0.1.10",
+  version: "0.x.x",
   exports: ["bx-pch047"],
   instances: [
     {
