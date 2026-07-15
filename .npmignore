@@ -1,4 +1,5 @@
 node_modules
+docs
 tsconfig.json
 .prettierrc
 .eslint.config.mjs

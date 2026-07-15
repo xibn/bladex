@@ -1,7 +1,7 @@
-import { hash } from "../utils/hash";
 import { loadConfig } from "../utils/config";
 import { getExports } from "../utils/exports";
 import { buildExport } from "../utils/buildExport";
+import { createExportId } from "../utils/exportId";
 import type { ServerWebSocket } from "bun";
 import { watch } from "node:fs";
 import { relative, resolve } from "node:path";
@@ -44,7 +44,7 @@ async function buildOne(fullPath: string) {
 
     const snapshot = JSON.stringify({ head, code, css });
 
-    const newHash = hash(snapshot);
+    const newHash = Bun.hash(snapshot).toString();
     const oldHash = prevHashes.get(fullPath);
 
     const shouldUpdate = !!oldHash && oldHash !== newHash;
@@ -57,13 +57,14 @@ async function buildOne(fullPath: string) {
     }
 
     const fileUrl = relative(rootDir, fullPath).replaceAll("\\", "/");
+    const exportId = createExportId(fileUrl);
 
     if (shouldUpdate) {
       for (const ws of clients) {
         ws.send(
           JSON.stringify({
             type: "update",
-            id: fileUrl,
+            id: exportId,
             code,
             css,
           }),

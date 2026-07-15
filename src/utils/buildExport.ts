@@ -7,6 +7,7 @@ import { HeadInput } from "../head/type";
 import { resolveOutputPath } from "./resolveOutput";
 import { generateBladeComponentView } from "./generateBladeComponentView";
 import { generateBladePageView } from "./generateBladePageView";
+import { createExportId } from "./exportId";
 
 async function getExternalPackages(rootDir: string): Promise<string[]> {
   try {
@@ -38,6 +39,7 @@ export async function buildExport(
   const virtualEntry = "/virtual-entry.tsx";
 
   const fileUrl = relative(rootDir, fullPath).replaceAll("\\", "/");
+  const exportId = createExportId(fileUrl);
 
   const external = config.esmSh ? await getExternalPackages(rootDir) : [];
 
@@ -69,7 +71,7 @@ export async function buildExport(
     // TODO: remove "as any" when Bun type-bug is fixed
 
     files: {
-      [virtualEntry]: generateVirtualFile(fileUrl),
+      [virtualEntry]: generateVirtualFile(fileUrl, exportId),
     },
 
     plugins: [dataUrlPlugin],
@@ -114,7 +116,7 @@ export async function buildExport(
 
     await Bun.write(
       bladePath,
-      generateBladePageView(config, head, code, css, fileUrl),
+      generateBladePageView(config, head, code, css, exportId),
     );
 
     return { bladePath, type: "page", head, code, css };
@@ -130,7 +132,7 @@ export async function buildExport(
 
     await Bun.write(
       bladePath,
-      generateBladeComponentView(config, code, css, fileUrl),
+      generateBladeComponentView(config, code, css, exportId),
     );
 
     return { bladePath, type: "component", code, css };

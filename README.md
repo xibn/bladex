@@ -161,6 +161,8 @@ BladeX separates server and client data:
 
 - Use `useBladeData()` inside React components to access Blade data.
 - Use `bladeVar()` inside the `head` to reference Blade variables.
+- Component data is scoped to the generated BladeX instance, so multiple
+  BladeX components on the same page no longer overwrite each other.
 
 ```tsx
 const data = useBladeData<{ name: string }>();
@@ -169,6 +171,31 @@ const data = useBladeData<{ name: string }>();
 ```tsx
 title().content(bladeVar("title"));
 ```
+
+## 🧩 Livewire / Filament SPA support
+
+Generated BladeX components are self-contained and include their own embedded
+runtime. No extra JavaScript file, Vite setup, Composer package, middleware, or
+service provider is required.
+
+The embedded runtime mounts components from the DOM instead of relying on an
+inline queue script. It observes dynamically added and removed BladeX containers,
+remounts after `livewire:navigated`, and unmounts React roots when containers are
+removed. This makes BladeX components safer inside Filament SPA pages that use
+Livewire `wire:navigate`, while keeping normal Blade pages and standalone BladeX
+pages working the same way.
+
+BladeX uses opaque generated export IDs in the HTML instead of exposing source
+file paths as DOM attributes.
+
+For diagnostics in the browser console:
+
+```js
+window[Symbol.for("bladex.runtime")]?.inspect();
+```
+
+More runtime debugging notes are available in the
+[GitHub diagnostics guide](https://github.com/xibn/bladex/blob/main/docs/runtime-diagnostics.md).
 
 ## 👥 Contributing
 

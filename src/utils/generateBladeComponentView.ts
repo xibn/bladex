@@ -11,28 +11,18 @@ export function generateBladeComponentView(
   const cssHtml = css ? `<style id="_bladex_css">${css}</style>` : "";
 
   return `
-<div data-bladex-component wire:ignore>
+@php
+    $__bladexInstance = str_replace('.', '-', uniqid('bx-', true));
+@endphp
+<div
+    data-bladex-component
+    data-bladex-export="${id}"
+    data-bladex-instance="{{ $__bladexInstance }}"
+    data-bladex-state="pending"
+    wire:ignore
+>
+    <script type="application/json" data-bladex-props>@json($__data ?? [])</script>
     <div data-bladex-root></div>
-
-    <script>
-        window.__BLADEX_DATA__ = {{ Js::from($__data ?? []) }};
-    </script>
-
-    <script>
-        (() => {
-            const script = document.currentScript;
-            const container = script?.closest("[data-bladex-component]");
-
-            if (!container) {
-                return;
-            }
-
-            const queues = window.__BLADEX_COMPONENT_QUEUES__ ||= {};
-            const queue = queues[${JSON.stringify(id)}] ||= [];
-
-            queue.push(container);
-        })();
-    </script>
 
     ${cssHtml}
 

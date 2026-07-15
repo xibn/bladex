@@ -22,11 +22,19 @@ export function generateBladePageView(
     </head>
 
     <body>
-        <div data-bladex-root></div>
-
-        <script>
-            window.__BLADEX_DATA__ = {{ Js::from($__data ?? []) }};
-        </script>
+        @php
+            $__bladexInstance = str_replace('.', '-', uniqid('bx-', true));
+        @endphp
+        <div
+            data-bladex-component
+            data-bladex-page
+            data-bladex-export="${id}"
+            data-bladex-instance="{{ $__bladexInstance }}"
+            data-bladex-state="pending"
+        >
+            <script type="application/json" data-bladex-props>@json($__data ?? [])</script>
+            <div data-bladex-root></div>
+        </div>
 
         ${chunkCode(config, code)}
 

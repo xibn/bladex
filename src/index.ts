@@ -1,11 +1,39 @@
 import type { BladeXConfig } from "./types/config";
 
+const bladeXDataContextKey = Symbol.for("bladex.dataContext");
+const bladeXReactKey = Symbol.for("bladex.react");
+
+type BladeXReact = {
+  createContext(defaultValue: unknown): unknown;
+  useContext<T>(context: unknown): T;
+};
+
+type BladeXGlobal = typeof globalThis & {
+  [bladeXDataContextKey]?: unknown;
+  [bladeXReactKey]?: BladeXReact;
+  __BLADEX_DATA__?: unknown;
+};
+
+function getBladeXDataContext(react?: BladeXReact): unknown {
+  const global = globalThis as BladeXGlobal;
+
+  if (!global[bladeXDataContextKey] && react) {
+    global[bladeXDataContextKey] = react.createContext(undefined);
+  }
+
+  return global[bladeXDataContextKey];
+}
+
 export function useBladeData<T = unknown>(): T {
   if (typeof window === "undefined") return {} as T;
 
-  return (
-    (window as unknown as { __BLADEX_DATA__?: T }).__BLADEX_DATA__ ?? ({} as T)
-  );
+  const global = globalThis as BladeXGlobal;
+  const react = global[bladeXReactKey];
+  const context = getBladeXDataContext(react);
+  const value =
+    react && context ? react.useContext<unknown>(context) : undefined;
+
+  return (value ?? global.__BLADEX_DATA__ ?? {}) as T;
 }
 
 export { title } from "./head/title";
